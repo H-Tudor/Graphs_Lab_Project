@@ -26,10 +26,10 @@ TODO: Create App Interface
 - File Select Pop-up
 - Buttons
 
-TODO: Create LoadGraph
+TODO: Create LoadGraph: DONE
 
 - params:
-	- filename: str
+	- filename: str, default="input.txt"
 	- mode: bool, default=true (true - adjacency matrix, false - edge list)
 
 - returns:
@@ -38,11 +38,11 @@ TODO: Create LoadGraph
 Input File Format
 ```txt
 5			# nr of nodes
-0 32 43		# node_id x y 
-1 45 12
-2 89 15
-3 39 59
-4 55 82
+32 43		# x y 
+45 12
+89 15
+39 59
+55 82
 
 --- edge list
 0 1	5	# (= 1 0), (start_node end_node weight)
@@ -59,21 +59,21 @@ Input File Format
 ```
 
 
-TODO: Create SaveGraph
+TODO: Create SaveGraph: DONE
 
 - params:
 	- graph: Graph
-	- filename: str
+	- filename: str, default="output.txt"
 	- mode: bool, default=true (true - adjacency matrix, false - edge list)
 
 Output File Format
 ```txt
 5			# nr of nodes
-0 32 43		# node_id x y 
-1 45 12
-2 89 15
-3 39 59
-4 55 82
+32 43		# x y 
+45 12
+89 15
+39 59
+55 82
 
 --- edge list
 0 1	5	# (= 1 0), (start_node end_node weight)
