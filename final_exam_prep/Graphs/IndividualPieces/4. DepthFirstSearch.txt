@@ -21,16 +21,15 @@ public void Start_DepthFirstSearch(Node? start_node = null, int start_node_id = 
 	visited = new bool[NodesCount];
 
 	if(recursive)
-		DepthFirstSearch_Recursive(start_node_id, debug);
+		DepthFirstSearch_Recursive_AdjacencyMatrix(start_node_id, debug);
 	else
-		DepthFirstSearch_Stack(start_node_id, debug);
+		DepthFirstSearch_Stack_AdjacencyMatrix(start_node_id, debug);
 
 	Console.WriteLine();
 	visited = new bool[NodesCount];
 }
-		
 
-private void DepthFirstSearch_Recursive(int start_node_id, bool debug = false) {
+private void DepthFirstSearch_Recursive_AdjacencyMatrix(int start_node_id, bool debug = false) {
 	if(visited[start_node_id] == true)
 		return;
 
@@ -43,20 +42,37 @@ private void DepthFirstSearch_Recursive(int start_node_id, bool debug = false) {
 			continue;
 
 		if(adjacency_matrix[start_node_id, j] != 0)
-			DepthFirstSearch_Recursive(start_node_id: j, debug: debug);
+			DepthFirstSearch_Recursive_AdjacencyMatrix(start_node_id: j, debug: debug);
 	}
 }
 
-private void DepthFirstSearch_Stack(int start_node_id, bool debug = false) {
-	Stack<int> queue = new Stack<int>();
-	queue.Push(start_node_id);
+private void DepthFirstSearch_Stack_AdjacencyMatrix(int start_node_id, bool debug = false) {
+	Stack<int> stack = new Stack<int>();
+	stack.Push(start_node_id);
+	visited[start_node_id] = true;
+
+	while(stack.Count() > 0) {
+		int currentNode = stack.Pop();
+
+		for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
+			if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+				stack.Push(neighbor);
+				visited[neighbor] = true;
+			}
+		}
+	}
+}
+
+private void DepthFirstSearch_Stack_EdgeList(int start_node_id, bool debug = false) {
+	Stack<int> stack = new Stack<int>();
+	stack.Push(start_node_id);
 	visited[start_node_id] = true;
 
 	int current, next;
 	bool check_1, check_2;
 
-	while(queue.Count() > 0) {
-		current = queue.Pop();
+	while(stack.Count() > 0) {
+		current = stack.Pop();
 
 		if(debug)
 			Console.Write($"{current} ");
@@ -77,7 +93,7 @@ private void DepthFirstSearch_Stack(int start_node_id, bool debug = false) {
 			}
 
 			visited[next] = true;
-			queue.Push(next);
+			stack.Push(next);
 		}
 	}
 }

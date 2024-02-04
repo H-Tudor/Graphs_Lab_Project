@@ -148,7 +148,7 @@
 		}
 
 		private void GuardRail(List<Node> nodes, int[,] adjacency_matrix) {
-			int nodes_count = nodes.Count();
+			int nodes_count = NodesCount;
 			int adj_matrix_r0 = adjacency_matrix.GetLength(0);
 			int adj_matrix_r1 = adjacency_matrix.GetLength(1);
 
@@ -168,9 +168,10 @@
 
 			for(int i = 0; i < adjacency_matrix.GetLength(0) - 1; i++) {
 				for(int j = i + 1; j < adjacency_matrix.GetLength(1); j++) {
-					if(adjacency_matrix[i, j] != 0) {
-						edge_list.Add([i, j, adjacency_matrix[i, j]]);
-					}
+					if(adjacency_matrix[i, j] == 0)
+						continue;
+
+					edge_list.Add([i, j, adjacency_matrix[i, j]]);
 				}
 			}
 		}
@@ -179,6 +180,9 @@
 			adjacency_matrix = new int[NodesCount, NodesCount];
 
 			foreach(int[] edge in edge_list) {
+				if(edge.Length != 3)
+					throw new Exception($"Edge array {edge} has more or less than 3 values");
+
 				adjacency_matrix[edge[0], edge[1]] = edge[2];
 				adjacency_matrix[edge[1], edge[0]] = edge[2];
 			}
@@ -187,11 +191,14 @@
 		private void GetAdjacencyDictFromEdgeList(List<Node> nodes, List<int[]> edge_list) {
 			edge_dict = [];
 
-			for(int i = 0; i < nodes.Count(); i++) {
+			for(int i = 0; i < NodesCount; i++) {
 				edge_dict[i] = [];
 			}
 
 			foreach(int[] edge in edge_list) {
+				if(edge.Length != 3)
+					throw new Exception($"Edge array {edge} has more or less than 3 values");
+
 				edge_dict[edge[0]].Add([edge[1], edge[2]]);
 				edge_dict[edge[1]].Add([edge[0], edge[2]]);
 			}
@@ -222,9 +229,9 @@
 			visited = new bool[NodesCount];
 
 			if(recursive)
-				DepthFirstSearch_Recursive(start_node_id, debug);
+				DepthFirstSearch_Recursive_AdjacencyMatrix(start_node_id, debug);
 			else
-				DepthFirstSearch_Stack(start_node_id, debug);
+				DepthFirstSearch_Stack_AdjacencyMatrix(start_node_id, debug);
 
 			Console.WriteLine();
 			visited = new bool[NodesCount];
@@ -237,14 +244,14 @@
 				Console.WriteLine($"\nBreath First Search: start from {start_node_id}");
 
 			visited = new bool[NodesCount];
-			BreathFirstSearch_Queue(start_node_id, debug);
+			BreathFirstSearch_Queue_AdjacencyMatrix(start_node_id, debug);
 			Console.WriteLine();
 			visited = new bool[NodesCount];
 		}
 
 		/// Graph Search Methods
 
-		private void DepthFirstSearch_Recursive(int start_node_id, bool debug = false) {
+		private void DepthFirstSearch_Recursive_AdjacencyMatrix(int start_node_id, bool debug = false) {
 			if(visited[start_node_id] == true)
 				return;
 
@@ -257,20 +264,37 @@
 					continue;
 
 				if(adjacency_matrix[start_node_id, j] != 0)
-					DepthFirstSearch_Recursive(start_node_id: j, debug: debug);
+					DepthFirstSearch_Recursive_AdjacencyMatrix(start_node_id: j, debug: debug);
 			}
 		}
 
-		private void DepthFirstSearch_Stack(int start_node_id, bool debug = false) {
-			Stack<int> queue = new Stack<int>();
-			queue.Push(start_node_id);
+		private void DepthFirstSearch_Stack_AdjacencyMatrix(int start_node_id, bool debug = false) {
+			Stack<int> stack = new Stack<int>();
+			stack.Push(start_node_id);
+			visited[start_node_id] = true;
+
+			while(stack.Count() > 0) {
+				int currentNode = stack.Pop();
+
+				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
+					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+						stack.Push(neighbor);
+						visited[neighbor] = true;
+					}
+				}
+			}
+		}
+
+		private void DepthFirstSearch_Stack_EdgeList(int start_node_id, bool debug = false) {
+			Stack<int> stack = new Stack<int>();
+			stack.Push(start_node_id);
 			visited[start_node_id] = true;
 
 			int current, next;
 			bool check_1, check_2;
 
-			while(queue.Count() > 0) {
-				current = queue.Pop();
+			while(stack.Count() > 0) {
+				current = stack.Pop();
 
 				if(debug)
 					Console.Write($"{current} ");
@@ -291,12 +315,29 @@
 					}
 
 					visited[next] = true;
-					queue.Push(next);
+					stack.Push(next);
 				}
 			}
 		}
 
-		private void BreathFirstSearch_Queue(int start_node_id, bool debug = false) {
+		private void BreathFirstSearch_Queue_AdjacencyMatrix(int start_node_id, bool debug = false) {
+			Queue<int> queue = new Queue<int>();
+			queue.Enqueue(start_node_id);
+			visited[start_node_id] = true;
+
+			while(queue.Count() > 0) {
+				int currentNode = queue.Dequeue();
+
+				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
+					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+						queue.Enqueue(neighbor);
+						visited[neighbor] = true;
+					}
+				}
+			}
+		}
+
+		private void BreathFirstSearch_Queue_EdgeList(int start_node_id, bool debug = false) {
 			Queue<int> queue = new Queue<int>();
 			queue.Enqueue(start_node_id);
 			visited[start_node_id] = true;
@@ -481,7 +522,7 @@
 			int index = nodes.IndexOf(node);
 			int degree = 0;
 
-			for(int i = 0; i < nodes.Count; i++) {
+			for(int i = 0; i < NodesCount; i++) {
 				degree += adjacency_matrix[index, i];
 			}
 
@@ -493,11 +534,11 @@
 				return false;
 
 			foreach(Node node in nodes) {
-				if(Degree(node) < nodes.Count / 2)
+				if(Degree(node) < NodesCount / 2)
 					return false;
 			}
 
-			bool[] visited = new bool[nodes.Count];
+			bool[] visited = new bool[NodesCount];
 			Stack<int> stack = new Stack<int>();
 			stack.Push(0);
 			visited[0] = true;
@@ -505,7 +546,7 @@
 			while(stack.Count > 0) {
 				int currentNode = stack.Pop();
 
-				for(int neighbor = 0; neighbor < nodes.Count; neighbor++) {
+				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
 					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
 						stack.Push(neighbor);
 						visited[neighbor] = true;

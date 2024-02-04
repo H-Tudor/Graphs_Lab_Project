@@ -1,5 +1,3 @@
-
-
 private int NodeToIndex(Node? start_node = null, int start_node_id = -1) {
 	if(start_node != null) {
 		if(nodes.Contains(start_node) == false) {
@@ -21,10 +19,29 @@ public void Start_BreathFirstSearch(Node? start_node = null, int start_node_id =
 		Console.WriteLine($"\nBreath First Search: start from {start_node_id}");
 
 	visited = new bool[NodesCount];
-	BreathFirstSearch_Queue(start_node_id, debug);
+	BreathFirstSearch_Queue_AdjacencyMatrix(start_node_id, debug);
 	Console.WriteLine();
 	visited = new bool[NodesCount];
-}		private void BreathFirstSearch_Queue(int start_node_id, bool debug = false) {
+}
+
+private void BreathFirstSearch_Queue_AdjacencyMatrix(int start_node_id, bool debug = false) {
+	Queue<int> queue = new Queue<int>();
+	queue.Enqueue(start_node_id);
+	visited[start_node_id] = true;
+
+	while(queue.Count() > 0) {
+		int currentNode = queue.Dequeue();
+
+		for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
+			if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+				queue.Enqueue(neighbor);
+				visited[neighbor] = true;
+			}
+		}
+	}
+}
+
+private void BreathFirstSearch_Queue_EdgeList(int start_node_id, bool debug = false) {
 	Queue<int> queue = new Queue<int>();
 	queue.Enqueue(start_node_id);
 	visited[start_node_id] = true;
