@@ -1,5 +1,5 @@
 ﻿namespace lab_final {
-	public class GraphOperations {
+	public class Implemented_Operations {
 		public static int nr_of_nodes;
 		public static int[] adv;
 		public static int[,] adj;

@@ -1,0 +1,60 @@
+
+
+private int NodeToIndex(Node? start_node = null, int start_node_id = -1) {
+	if(start_node != null) {
+		if(nodes.Contains(start_node) == false) {
+			throw new Exception($"Node {start_node} is not a know node of graph {this}");
+		}
+
+		start_node_id = nodes.IndexOf(start_node);
+	} else if(start_node_id == -1) {
+		throw new Exception("Neither Current node or start_node_id provided");
+	}
+
+	return start_node_id;
+}
+
+public void Start_BreathFirstSearch(Node? start_node = null, int start_node_id = -1, bool debug = false) {
+	start_node_id = NodeToIndex(start_node, start_node_id);
+
+	if(debug)
+		Console.WriteLine($"\nBreath First Search: start from {start_node_id}");
+
+	visited = new bool[NodesCount];
+	BreathFirstSearch_Queue(start_node_id, debug);
+	Console.WriteLine();
+	visited = new bool[NodesCount];
+}		private void BreathFirstSearch_Queue(int start_node_id, bool debug = false) {
+	Queue<int> queue = new Queue<int>();
+	queue.Enqueue(start_node_id);
+	visited[start_node_id] = true;
+
+	int current, next;
+	bool check_1, check_2;
+
+	while(queue.Count() > 0) {
+		current = queue.Dequeue();
+
+		if(debug)
+			Console.Write($"{current} ");
+
+		foreach(int[] edge in edge_list) {
+			if(edge[2] == 0 || (edge[0] != current && edge[1] != current))
+				continue;
+
+			check_1 = edge[0] == current && visited[edge[1]] == false;
+			check_2 = edge[1] == current && visited[edge[0]] == false;
+
+			if(check_1) {
+				next = edge[1];
+			} else if(check_2) {
+				next = edge[0];
+			} else {
+				continue;
+			}
+
+			visited[next] = true;
+			queue.Enqueue(next);
+		}
+	}
+}

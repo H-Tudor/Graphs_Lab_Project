@@ -1,0 +1,110 @@
+﻿public Graph(string filename, bool mode = false, bool debug = false) {
+	if(debug)
+		Console.WriteLine($"Input File: {filename}");
+
+	TextReader reader = new StreamReader(filename);
+
+	int nr_of_nodes;
+	if(int.TryParse(reader.ReadLine(), out nr_of_nodes) == false) {
+		throw new Exception("Invalid Input File Format - nr of nodes");
+	}
+
+	if(debug)
+		Console.WriteLine($"No. of nodes: {nr_of_nodes}");
+
+	nodes = new List<Node>();
+	for(int i = 0; i < nr_of_nodes; i++) {
+		string[] node_specs = reader.ReadLine().Split(' ');
+		int node_x, node_y;
+		bool parse_1, parse_2;
+
+		parse_1 = int.TryParse(node_specs[0], out node_x);
+		parse_2 = int.TryParse(node_specs[1], out node_y);
+
+		if(!parse_1 || !parse_2) {
+			throw new Exception($"Invalid Input File Format - node {i} format ({parse_1}, {parse_2})");
+		}
+
+		if(debug)
+			Console.WriteLine($"Node {i + 1}: {node_x}, {node_y}");
+
+		nodes[i] = new Node(node_x, node_y);
+	}
+
+	if(debug)
+		Console.WriteLine("Graph Loading Mode: " + (mode ? "adjacency matrix" : "edge_list"));
+
+	reader.ReadLine();
+	if(mode) {
+		adjacency_matrix = new int[nr_of_nodes, nr_of_nodes];
+		string line;
+		for(int i = 0; i < nr_of_nodes; i++) {
+			line = reader.ReadLine();
+			string[] node_connections = line.Split(' ');
+
+			if(node_connections.Length != nr_of_nodes) {
+				throw new Exception($"Invalid Input File Format - invalid connections nr for node {i}");
+			}
+
+			int connection;
+			for(int j = 0; j < nr_of_nodes; j++) {
+				if(!int.TryParse(node_connections[j], out connection)) {
+					throw new Exception($"Invalid Input File Format - error parsing node connection {j}");
+				}
+				adjacency_matrix[i, j] = connection;
+
+				if(debug)
+					Console.Write($"{connection} ");
+			}
+
+			if(debug)
+				Console.WriteLine();
+		}
+
+		reader.Close();
+		GuardRail(nodes, adjacency_matrix);
+
+		GetEdgeListFromAdjacencyMatrix(adjacency_matrix);
+		GetAdjacencyDictFromEdgeList(nodes, this.edge_list);
+	} else {
+		edge_list = new List<int[]>();
+
+		string line;
+		int counter = 0;
+		while((line = reader.ReadLine()) != null) {
+			if(line == "") {
+				continue;
+			}
+
+			if(debug)
+				Console.WriteLine($"--{line}");
+
+			string[] connection = line.Split(' ');
+			if(connection.Length != 3) {
+				throw new Exception($"Invalid Input File Format - error parsing edge '{counter}: {line}': insufficient parameters ({connection.Length})");
+			}
+
+
+			int start_node_id, end_node, weight;
+			bool parse_1, parse_2, parse_3;
+
+			parse_1 = int.TryParse(connection[0], out start_node_id);
+			parse_2 = int.TryParse(connection[1], out end_node);
+			parse_3 = int.TryParse(connection[2], out weight);
+
+			if(!parse_1 || !parse_2 || !parse_3) {
+				throw new Exception($"Invalid Input File Format - error parsing edge '{counter}: {line}' ({parse_1}, {parse_2}, {parse_3})");
+			}
+
+			counter++;
+			edge_list.Add([start_node_id, end_node, weight]);
+
+			if(debug)
+				Console.WriteLine($"{start_node_id} <-{weight}-> {end_node}");
+		}
+
+		reader.Close();
+		GetAdjacencyMatrixFromEdgeList(nodes, edge_list);
+		GetAdjacencyDictFromEdgeList(this.nodes, this.edge_list);
+	}
+}

@@ -1,0 +1,33 @@
+private void GetEdgeListFromAdjacencyMatrix(int[,] adjacency_matrix) {
+	edge_list = new List<int[]>();
+
+	for(int i = 0; i < adjacency_matrix.GetLength(0) - 1; i++) {
+		for(int j = i + 1; j < adjacency_matrix.GetLength(1); j++) {
+			if(adjacency_matrix[i, j] != 0) {
+				edge_list.Add([i, j, adjacency_matrix[i, j]]);
+			}
+		}
+	}
+}
+
+private void  GetAdjacencyMatrixFromEdgeList(List<Node> nodes, List<int[]> edge_list) {
+	adjacency_matrix = new int[NodesCount, NodesCount];
+
+	foreach(int[] edge in edge_list) {
+		adjacency_matrix[edge[0], edge[1]] = edge[2];
+		adjacency_matrix[edge[1], edge[0]] = edge[2];
+	}
+}
+
+private void GetAdjacencyDictFromEdgeList(List<Node> nodes, List<int[]> edge_list) {
+	edge_dict = [];
+
+	for(int i = 0; i < nodes.Count(); i++) {
+		edge_dict[i] = [];
+	}
+
+	foreach(int[] edge in edge_list) {
+		edge_dict[edge[0]].Add([edge[1], edge[2]]);
+		edge_dict[edge[1]].Add([edge[0], edge[2]]);
+	}
+}

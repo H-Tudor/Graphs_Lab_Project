@@ -1,0 +1,110 @@
+public KeyValuePair<int, int[]> Dijkstra(int start_node_id, int end_node_id, bool debug = false) {
+	int iter = 0;
+	int current_node, new_distance, min_distance, min_node;
+	bool[] visited = new bool[7];
+	List<int> available = [], path = [];
+	Queue<int> queue = new Queue<int>();
+	Dictionary<int, int[]> distances = [];
+
+	if(debug)
+		Console.WriteLine("\nDijkstra");
+
+	for(int i = 0; i < NodesCount; i++) {
+		distances[i] = i == start_node_id ? [0, 0] : [int.MaxValue, 0];
+	}
+
+	queue.Enqueue(start_node_id);
+	while(queue.Count > 0) {
+		current_node = queue.Dequeue();
+		if(current_node == -1) {
+			break;
+		}
+
+		visited[current_node] = true;
+		available = [];
+
+		if(debug)
+			Console.WriteLine($"Updating Costs: (iteration {iter})");
+
+		// Update available distances
+		// connection[0] - destination node
+		// connection[1] - weight
+		// distances[0] - weight
+		// distances[1] - prev node
+		foreach(int[] conn in edge_dict[current_node]) {
+			new_distance = distances[current_node][0] + conn[1];
+
+			if(new_distance >= distances[conn[0]][0]) {
+				continue;
+			}
+
+			// update the cost of the node
+			distances[conn[0]] = [new_distance, current_node];
+
+			if(debug)
+				Console.WriteLine($"{conn[0]} {new_distance} ({current_node})");
+
+			// update the temp list of available edges for next step
+			available.Add(conn[0]);
+		}
+
+		// Select next node
+		// The next node is selected from the available *unexplored* nodes,
+		// and is the one with the lowest cost
+		min_node = -1;
+		min_distance = int.MaxValue;
+		for(int i = 0; i < NodesCount; i++) {
+			if(visited[i] || distances[i][0] >= min_distance) {
+				continue;
+			}
+
+			min_distance = distances[i][0];
+			min_node = i;
+		}
+
+		// add the next node to be visited, default is -1 which will exit loop on next iteration
+		queue.Enqueue(min_node);
+
+		if(debug)
+			Console.WriteLine($"Next Node: {min_node}");
+	}
+
+	// return -1 if node has not been reached
+	if(distances[end_node_id][0] == int.MaxValue) {
+		return new KeyValuePair<int, int[]>(-1, []);
+	}
+
+	// construct the path from the end node to the start node
+	int distance = distances[end_node_id][0];
+	current_node = distances[end_node_id][1];
+
+	if(debug) {
+		Console.WriteLine("Path Traceback (Node @ Distance)");
+		Console.WriteLine($"{end_node_id} @ {distances[end_node_id][0]}");
+	}
+
+	while(current_node != start_node_id && current_node != -1) {
+		if(debug)
+			Console.WriteLine($"{current_node} @ {distances[current_node][0]}");
+
+		path.Add(current_node);
+		current_node = distances[current_node][1];
+	}
+	if(debug)
+		Console.WriteLine("--- End Traceback ---");
+
+	// return the distance and path
+	path.Reverse();
+	path.Insert(0, start_node_id);
+	path.Add(end_node_id);
+	if(debug) {
+		Console.WriteLine($"\nDistance from {start_node_id} to {end_node_id} is {distance}");
+		Console.WriteLine("Path Forward Pass (Node @ Distance)");
+		foreach(int node in path) {
+			Console.WriteLine($"{node} @ {distances[node][0]}");
+		}
+		Console.WriteLine("--- End Forward Pass ---");
+	}
+
+	return new KeyValuePair<int, int[]>(distance, path.ToArray());
+}

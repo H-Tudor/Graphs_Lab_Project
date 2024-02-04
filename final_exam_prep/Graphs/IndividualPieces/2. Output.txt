@@ -1,0 +1,24 @@
+public void SaveGraph(string filename = "output.txt", bool mode = true) {
+	TextWriter writer = new StreamWriter(filename);
+
+	writer.WriteLine(NodesCount.ToString());
+	foreach(Node node in nodes) {
+		writer.WriteLine($"{node.x} {node.y}");
+	}
+
+	writer.WriteLine();
+	if(mode) {
+		for(int i = 0; i < NodesCount; i++) {
+			for(int j = 0; j < NodesCount; j++) {
+				writer.Write($"{adjacency_matrix[i, j]} ");
+			}
+			writer.Write("\n");
+		}
+	} else {
+		foreach(int[] edge in edge_list) {
+			writer.WriteLine($"{edge[0]} {edge[1]} {edge[2]}");
+		}
+	}
+
+	writer.Close();
+}
