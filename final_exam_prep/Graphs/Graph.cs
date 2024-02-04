@@ -175,7 +175,7 @@
 			}
 		}
 
-		private void  GetAdjacencyMatrixFromEdgeList(List<Node> nodes, List<int[]> edge_list) {
+		private void GetAdjacencyMatrixFromEdgeList(List<Node> nodes, List<int[]> edge_list) {
 			adjacency_matrix = new int[NodesCount, NodesCount];
 
 			foreach(int[] edge in edge_list) {
@@ -477,7 +477,70 @@
 			return new KeyValuePair<int, int[]>(distance, path.ToArray());
 		}
 
-		// TODO: Implement Kruskal's Algorithm
+		private int Degree(Node node) {
+			int index = nodes.IndexOf(node);
+			int degree = 0;
 
+			for(int i = 0; i < nodes.Count; i++) {
+				degree += adjacency_matrix[index, i];
+			}
+
+			return degree;
+		}
+
+		public bool IsHamiltonian() {
+			if(NodesCount <= 2)
+				return false;
+
+			foreach(Node node in nodes) {
+				if(Degree(node) < nodes.Count / 2)
+					return false;
+			}
+
+			bool[] visited = new bool[nodes.Count];
+			Stack<int> stack = new Stack<int>();
+			stack.Push(0);
+			visited[0] = true;
+
+			while(stack.Count > 0) {
+				int currentNode = stack.Pop();
+
+				for(int neighbor = 0; neighbor < nodes.Count; neighbor++) {
+					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+						stack.Push(neighbor);
+						visited[neighbor] = true;
+					}
+				}
+			}
+
+			if(Array.TrueForAll(visited, v => v) != true)
+				return false;
+
+			int isolated_nodes = 0;
+			foreach(Node node in nodes) {
+				if(Degree(node) == 0)
+					isolated_nodes++;
+			}
+
+			if(isolated_nodes != 0)
+				return false;
+
+			return true;
+		}
+
+		public List<int[]> MinimumSpanningTree() {
+			bool[] visited = new bool[NodesCount];
+			List<int[]> minimumSpanningTree = new List<int[]>();
+
+			List<int[]> edges = edge_list.OrderBy(e => e[2]).ToList();
+			foreach(int[] edge in edges) {
+				if(visited[edge[0]] && visited[edge[1]])
+					continue;
+
+				minimumSpanningTree.Add(edge);
+			}
+
+			return minimumSpanningTree;
+		}
 	}
 }
