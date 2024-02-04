@@ -9,10 +9,12 @@
 
   <ItemGroup>
     <None Remove="Graphs\IndividualPieces\1. Input.txt" />
+    <None Remove="Graphs\IndividualPieces\8. HamiltonianNoBackTracking.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Graphs\IndividualPieces\1. Input.txt" />
+    <Compile Include="Graphs\IndividualPieces\8. HamiltonianNoBackTracking.txt" />
   </ItemGroup>
 
 </Project>

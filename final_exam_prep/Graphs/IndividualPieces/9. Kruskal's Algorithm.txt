@@ -1,0 +1,14 @@
+public List<int[]> MinimumSpanningTree() {
+	bool[] visited = new bool[NodesCount];
+	List<int[]> minimumSpanningTree = new List<int[]>();
+
+	List<int[]> edges = edge_list.OrderBy(e => e[2]).ToList();
+	foreach(int[] edge in edges) {
+		if(visited[edge[0]] && visited[edge[1]])
+			continue;
+
+		minimumSpanningTree.Add(edge);
+	}
+
+	return minimumSpanningTree;
+}
