@@ -75,3 +75,22 @@ private void BreathFirstSearch_Queue_EdgeList(int start_node_id, bool debug = fa
 		}
 	}
 }
+
+private void BreathFirstSearch_Queue_EdgeDict(int start_node_id, bool debug = false) {
+	Queue<int> queue = new Queue<int>();
+	queue.Enqueue(start_node_id);
+	visited[start_node_id] = true;
+
+	int current;
+	while(queue.Count() > 0) {
+		current = queue.Dequeue();
+
+		if(debug)
+			Console.Write($"{current} ");
+
+		foreach(int[] edge in edge_dict[current]) {
+			visited[edge[0]] = true;
+			queue.Enqueue(edge[0]);
+		}
+	}
+}

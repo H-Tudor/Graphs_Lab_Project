@@ -320,6 +320,26 @@
 			}
 		}
 
+		private void DepthFirstSearch_Stack_EdgeDict(int start_node_id, bool debug = false) {
+			Stack<int> stack = new Stack<int>();
+			stack.Push(start_node_id);
+			visited[start_node_id] = true;
+
+			int current;
+
+			while(stack.Count() > 0) {
+				current = stack.Pop();
+
+				if(debug)
+					Console.Write($"{current} ");
+
+				foreach(int[] edge in edge_dict[current]) {
+					visited[edge[0]] = true;
+					stack.Push(edge[0]);
+				}
+			}
+		}
+
 		private void BreathFirstSearch_Queue_AdjacencyMatrix(int start_node_id, bool debug = false) {
 			Queue<int> queue = new Queue<int>();
 			queue.Enqueue(start_node_id);
@@ -368,6 +388,25 @@
 
 					visited[next] = true;
 					queue.Enqueue(next);
+				}
+			}
+		}
+
+		private void BreathFirstSearch_Queue_EdgeDict(int start_node_id, bool debug = false) {
+			Queue<int> queue = new Queue<int>();
+			queue.Enqueue(start_node_id);
+			visited[start_node_id] = true;
+
+			int current;
+			while(queue.Count() > 0) {
+				current = queue.Dequeue();
+
+				if(debug)
+					Console.Write($"{current} ");
+
+				foreach(int[] edge in edge_dict[current]) {
+					visited[edge[0]] = true;
+					queue.Enqueue(edge[0]);
 				}
 			}
 		}
