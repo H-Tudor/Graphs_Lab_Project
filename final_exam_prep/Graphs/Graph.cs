@@ -94,7 +94,7 @@
 
 					string[] connection = line.Split(' ');
 					if(connection.Length != 3) {
-						throw new Exception($"Invalid Input File Format - error parsing edge '{counter}: {line}': insufficient parameters ({connection.Length})");
+						throw new Exception($"Invalid Input File Format - error parsing edge '{counter}: {line}': Nr of parameters ({connection.Length}) != 3");
 					}
 
 
@@ -449,7 +449,7 @@
 		public KeyValuePair<int, int[]> Dijkstra(int start_node_id, int end_node_id, bool debug = false) {
 			int iter = 0;
 			int current_node, new_distance, min_distance, min_node;
-			bool[] visited = new bool[7];
+			bool[] visited = new bool[NodesCount];
 			List<int> available = [], path = [];
 			Queue<int> queue = new Queue<int>();
 			Dictionary<int, int[]> distances = [];
