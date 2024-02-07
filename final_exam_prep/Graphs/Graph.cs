@@ -280,7 +280,7 @@ namespace final_exam_prep.Graphs {
 				int currentNode = stack.Pop();
 
 				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
-					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+					if(adjacency_matrix[currentNode, neighbor] != 0 && !visited[neighbor]) {
 						stack.Push(neighbor);
 						visited[neighbor] = true;
 					}
@@ -352,7 +352,7 @@ namespace final_exam_prep.Graphs {
 				int currentNode = queue.Dequeue();
 
 				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
-					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+					if(adjacency_matrix[currentNode, neighbor] != 0 && !visited[neighbor]) {
 						queue.Enqueue(neighbor);
 						visited[neighbor] = true;
 					}
@@ -503,7 +503,7 @@ namespace final_exam_prep.Graphs {
 
 				// Select next node
 				// The next node is selected from the available *unexplored* nodes,
-				// and is the one with the lowest cost
+				// and is the one with the lowest *global* cost
 				min_node = -1;
 				min_distance = int.MaxValue;
 				for(int i = 0; i < NodesCount; i++) {
@@ -599,7 +599,7 @@ namespace final_exam_prep.Graphs {
 				int currentNode = stack.Pop();
 
 				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
-					if(adjacency_matrix[currentNode, neighbor] == 1 && !visited[neighbor]) {
+					if(adjacency_matrix[currentNode, neighbor] != 0 && !visited[neighbor]) {
 						stack.Push(neighbor);
 						visited[neighbor] = true;
 					}
