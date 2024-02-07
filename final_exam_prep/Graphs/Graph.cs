@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace final_exam_prep.Graphs {
+﻿namespace final_exam_prep.Graphs {
 	internal class Graph {
 
 		public List<Node> nodes;
@@ -280,10 +277,12 @@ namespace final_exam_prep.Graphs {
 				int currentNode = stack.Pop();
 
 				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
-					if(adjacency_matrix[currentNode, neighbor] != 0 && !visited[neighbor]) {
-						stack.Push(neighbor);
-						visited[neighbor] = true;
+					if(adjacency_matrix[currentNode, neighbor] == 0 || visited[neighbor]) {
+						continue;
 					}
+
+					stack.Push(neighbor);
+					visited[neighbor] = true;
 				}
 			}
 		}
@@ -352,10 +351,12 @@ namespace final_exam_prep.Graphs {
 				int currentNode = queue.Dequeue();
 
 				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
-					if(adjacency_matrix[currentNode, neighbor] != 0 && !visited[neighbor]) {
-						queue.Enqueue(neighbor);
-						visited[neighbor] = true;
+					if(adjacency_matrix[currentNode, neighbor] == 0 || visited[neighbor]) {
+						continue;
 					}
+
+					queue.Enqueue(neighbor);
+					visited[neighbor] = true;
 				}
 			}
 		}
@@ -561,9 +562,11 @@ namespace final_exam_prep.Graphs {
 			if(debug) {
 				Console.WriteLine($"\nDistance from {start_node_id} to {end_node_id} is {distance}");
 				Console.WriteLine("Path Forward Pass (Node @ Distance)");
+
 				foreach(int node in path) {
 					Console.WriteLine($"{node} @ {distances[node][0]}");
 				}
+
 				Console.WriteLine("--- End Forward Pass ---");
 			}
 
@@ -599,14 +602,16 @@ namespace final_exam_prep.Graphs {
 				int currentNode = stack.Pop();
 
 				for(int neighbor = 0; neighbor < NodesCount; neighbor++) {
-					if(adjacency_matrix[currentNode, neighbor] != 0 && !visited[neighbor]) {
-						stack.Push(neighbor);
-						visited[neighbor] = true;
+					if(adjacency_matrix[currentNode, neighbor] == 0 || visited[neighbor]) {
+						continue;
 					}
+
+					stack.Push(neighbor);
+					visited[neighbor] = true;
 				}
 			}
 
-			if(Array.TrueForAll(visited, v => v) != true)
+			if(!Array.TrueForAll(visited, v => v))
 				return false;
 
 			int isolated_nodes = 0;
