@@ -1,4 +1,7 @@
-﻿namespace final_exam_prep.Graphs {
+﻿using System;
+using System.IO;
+
+namespace final_exam_prep.Graphs {
 	internal class Graph {
 
 		public List<Node> nodes;
@@ -446,11 +449,11 @@
 			return nodes_colors;
 		}
 
-		public KeyValuePair<int, int[]> Dijkstra(int start_node_id, int end_node_id, bool debug = false) {
+		public Dictionary<int, int[]> DijkstraGeneral(int start_node_id, bool debug = false) {
 			int iter = 0;
 			int current_node, new_distance, min_distance, min_node;
 			bool[] visited = new bool[NodesCount];
-			List<int> available = [], path = [];
+			List<int> available = [];
 			Queue<int> queue = new Queue<int>();
 			Dictionary<int, int[]> distances = [];
 
@@ -475,10 +478,12 @@
 					Console.WriteLine($"Updating Costs: (iteration {iter})");
 
 				// Update available distances
-				// connection[0] - destination node
-				// connection[1] - weight
-				// distances[0] - weight
-				// distances[1] - prev node
+				// distances - the distance from start_node to node i where it is described by the total cost and prev node
+				//     distances[i][0] - cost
+				//     distances[i][1] - prev node
+				// connection - the i-th direct connection available from `current_node` and it is described by the destination node and the weight of the connection
+				//     conn[0] - destination node
+				//     conn[1] - weight
 				foreach(int[] conn in edge_dict[current_node]) {
 					new_distance = distances[current_node][0] + conn[1];
 
@@ -517,6 +522,13 @@
 					Console.WriteLine($"Next Node: {min_node}");
 			}
 
+			return distances;
+		}
+
+		public KeyValuePair<int, int[]> DijkstraMinPath(int start_node_id, int end_node_id, bool debug = false) {
+			List<int> path = [];
+			Dictionary<int, int[]> distances = DijkstraGeneral(start_node_id, debug);
+
 			// return -1 if node has not been reached
 			if(distances[end_node_id][0] == int.MaxValue) {
 				return new KeyValuePair<int, int[]>(-1, []);
@@ -524,7 +536,7 @@
 
 			// construct the path from the end node to the start node
 			int distance = distances[end_node_id][0];
-			current_node = distances[end_node_id][1];
+			int current_node = distances[end_node_id][1];
 
 			if(debug) {
 				Console.WriteLine("Path Traceback (Node @ Distance)");
@@ -538,6 +550,7 @@
 				path.Add(current_node);
 				current_node = distances[current_node][1];
 			}
+
 			if(debug)
 				Console.WriteLine("--- End Traceback ---");
 
